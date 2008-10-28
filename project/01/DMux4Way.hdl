@@ -5,7 +5,11 @@
 
 /**
  * 4-way demultiplexor.  The 2-bit sel input selects the output to which 
- * the in input will be channeled: 00 to a, 01 to b, 10 to c, 11 to d.
+ * the in input will be channeled: 
+ * 00 to a, 
+ * 01 to b, 
+ * 10 to c, 
+ * 11 to d.
  * The other outputs are set to 0.
  */
 
@@ -15,6 +19,25 @@ CHIP DMux4Way {
     OUT a, b, c, d;
 
     PARTS:
-    // Implementation missing.
+    //inverted selectors
+		Not(in=sel[0], out=notsel0);
+		Not(in=sel[1], out=notsel1);
+
+		//a
+		And(a=in, b=notsel0, out=apart1);
+		And(a=apart1, b=notsel1, out=a);
+
+		//b
+		And(a=in, b=sel[0], out=bpart1);
+		And(a=bpart1, b=notsel1, out=b);
+
+		//c
+		And(a=in, b=notsel0, out=cpart1);
+		And(a=cpart1, b=sel[1], out=c);
+
+		//d
+		And(a=in, b=sel[0], out=dpart1);
+		And(a=dpart1, b=sel[1], out=d);
+
 }
 
