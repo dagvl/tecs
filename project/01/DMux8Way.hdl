@@ -5,7 +5,15 @@
 
 /**
  * 8-way demultiplexor.  The 3-bit sel input selects the output to which 
- * the in input will be channeled: (000 to a, 001 to b, ..., 111 to h).
+ * the in input will be channeled: (
+ * 000 to a, 
+ * 001 to b,
+ * 010 to c,
+ * 011 to d,
+ * 100 to e,
+ * 101 to f,
+ * 110 to g,
+ * 111 to h).
  * The other outputs are set to 0.
  */
 
@@ -15,6 +23,18 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-    // Implementation missing.
+		Not(in=sel[2], out=notsel2);
+		DMux4Way (in=in, a=prea, b=preb, c=prec, d=pred, sel=sel[0..1]);
+    DMux4Way (in=in, a=pree, b=pref, c=preg, d=preh, sel=sel[0..1]);
+
+		And(a=notsel2, b=prea, out=a);
+	  And(a=notsel2, b=preb, out=b);
+	  And(a=notsel2, b=prec, out=c);
+	  And(a=notsel2, b=pred, out=d);
+   	And(a=sel[2], b=pree, out=e);
+	  And(a=sel[2], b=pref, out=f);
+	  And(a=sel[2], b=preg, out=g);
+  	And(a=sel[2], b=preh, out=h);
+
 }
 
