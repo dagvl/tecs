@@ -41,5 +41,25 @@ CHIP ALU {
         ng; // 1 if out<0, 0 otherwise
 
     PARTS:
-    // Implementation missing.
+    //Prep X
+		Mux16 (a=x, b=false, sel=zx, out=zerox);
+		Not16 (in=x, out=negx);
+		Mux16 (a=zerox, b=negx, sel=nx, out=prex);
+
+	  //Prep Y
+		Mux16 (a=y, b=false, sel=zy, out=zeroy);
+		Not16 (in=y, out=negy);
+		Mux16 (a=zeroy, b=negy, sel=ny, out=prey);
+
+		//Do both operations
+		And16 (a=prex, b=prey, out=andres);
+		Add16 (a=prex, b=prey, out=addres); //ignore carry/overflow
+
+		//Select the wanted answer
+		Mux16 (a=andres, b=addres, sel=f, out=res);
+
+		//Negate the answer and select it if wanted
+		Not16 (in=res, out=negres);
+		Mux16 (a=res, b=negres, sel=no, out=realres); //realres is the result, only need flags to be processed
+
 }
