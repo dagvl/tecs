@@ -43,12 +43,12 @@ CHIP ALU {
     PARTS:
     //Prep X
 		Mux16 (a=x, b=false, sel=zx, out=zerox);
-		Not16 (in=x, out=negx);
+		Not16 (in=zerox, out=negx);
 		Mux16 (a=zerox, b=negx, sel=nx, out=prex);
 
 	  //Prep Y
 		Mux16 (a=y, b=false, sel=zy, out=zeroy);
-		Not16 (in=y, out=negy);
+		Not16 (in=zeroy, out=negy);
 		Mux16 (a=zeroy, b=negy, sel=ny, out=prey);
 
 		//Do both operations
@@ -60,6 +60,48 @@ CHIP ALU {
 
 		//Negate the answer and select it if wanted
 		Not16 (in=res, out=negres);
-		Mux16 (a=res, b=negres, sel=no, out=realres); //realres is the result, only need flags to be processed
+		Mux16 (a=res, b=negres, sel=no, out=r); //r is the result, only need flags to be processed
+		And16 (a=r, b=r, out=out);
 
+    //Less than zero-flag
+    And16 (a=true, b=r, out[15]=ng);
+    
+    //Exactly zero flag
+    And16 (a=true, b=r, out[0]=b0);
+    And16 (a=true, b=r, out[1]=b1);
+    And16 (a=true, b=r, out[2]=b2);
+    And16 (a=true, b=r, out[3]=b3);
+    And16 (a=true, b=r, out[4]=b4);
+    And16 (a=true, b=r, out[5]=b5);
+    And16 (a=true, b=r, out[6]=b6);
+    And16 (a=true, b=r, out[7]=b7);
+    And16 (a=true, b=r, out[8]=b8);
+    And16 (a=true, b=r, out[9]=b9);
+    And16 (a=true, b=r, out[10]=b10);
+    And16 (a=true, b=r, out[11]=b11);
+    And16 (a=true, b=r, out[12]=b12);
+    And16 (a=true, b=r, out[13]=b13);
+    And16 (a=true, b=r, out[14]=b14);
+    And16 (a=true, b=r, out[15]=b15);
+    
+    Or (a=b0, b=b1, out=or01);
+    Or (a=b2, b=b3, out=or23);
+    Or (a=b4, b=b5, out=or45);
+    Or (a=b6, b=b7, out=or67);
+    Or (a=b8, b=b9, out=or89);
+    Or (a=b10, b=b11, out=or1011);
+    Or (a=b12, b=b13, out=or1213);
+    Or (a=b14, b=b15, out=or1415);
+    
+    Or (a=or01, b=or23, out=or0123);
+    Or (a=or45, b=or67, out=or4567);
+    Or (a=or89, b=or1011, out=or891011);
+    Or (a=or1213, b=or1415, out=or12131415);
+    
+    Or (a=or0123, b=or4567, out=or01234567);
+    Or (a=or891011, b=or12131415, out=or89101112131415);
+    
+    Or (a=or01234567, b=or89101112131415, out=orall);
+    
+    Not (in=orall, out=zr);
 }
