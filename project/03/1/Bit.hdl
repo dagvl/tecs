@@ -15,5 +15,7 @@ CHIP Bit {
     OUT out;
 
     PARTS:
-    // Implementation missing.
+    Mux (a=dffout, b=in, sel=load, out=dffin);
+    DFF(in=dffin, out=dffout);
+    And(a=true, b=dffout, out=out);
 }
